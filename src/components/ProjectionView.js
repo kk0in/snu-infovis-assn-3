@@ -11,20 +11,17 @@ const ProjectionView = (props) => {
     let data = props.data;
     let axes = props.axes;  
 
-    useEffect(() => {
-        // svg.selectAll("*").remove(); // Clear previous visualization
-
-        // Calculate positions of each data point
-        console.log(axes);
-        console.log(data);
-        const points = data.map(d => {
-            let dx = 0, dy = 0;
-            axes.forEach((axis, index) => {
-                dx += axis.x * d[index]; // ax * da
-                dy += axis.y * d[index]; // ay * da
-            });
-            return { x: dx, y: dy };
+    const points = data.map(d => {
+        let dx = 0, dy = 0;
+        axes.forEach((axis, index) => {
+            dx += axis.x * d[index]; // ax * da
+            dy += axis.y * d[index]; // ay * da
         });
+        return { x: dx, y: dy };
+    });
+
+    useEffect(() => {
+        // Calculate positions of each data point
         console.log(points);
 
         const xScale = d3.scaleLinear()
@@ -32,17 +29,21 @@ const ProjectionView = (props) => {
                         .range([props.margin, props.width - props.margin]);
         const yScale = d3.scaleLinear()
                         .domain(d3.extent(points, d => d.y))
-                        .range([props.height - props.margin, props.margin]);
+                        .range([props.margin, props.height - props.margin]);
 
         const svg = d3.select(svgRef.current);
+        svg.selectAll("circle").remove(); // Clear previous visualization
+
         // Draw data points as circles
-        svg.selectAll("circle")
+        svg.append("g" )
+            //.attr("transform", `translate(${props.margin}, ${props.margin})`)
+            .selectAll("circle")
             .data(points)
             .enter()
             .append("circle")
-            .attr("cx", xScale(d => d.x))
-            .attr("cy", yScale(d => d.y))
-            .attr("r", 3)
+            .attr("cx", d => xScale(d.x))
+            .attr("cy", d => yScale(d.y))
+            .attr("r", 1.5)
             .style("fill", "white")
             .style("stroke", "black");
 

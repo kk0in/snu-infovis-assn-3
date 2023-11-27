@@ -21,7 +21,7 @@ function App() {
 
   // Fetch your data and axes information here with useEffect and update the state
   const width = 500;
-  const height = 350;
+  const height = 500;
   const margin = 35;
   
   return (

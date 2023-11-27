@@ -8,67 +8,22 @@ const LegendView = () => {
 
     useEffect(() => {
         const svg = d3.select(svgRef.current);
-        const defs = svg.append("defs");
-
-        // Create a gradient for the colormap
-        const gradient = defs.append("linearGradient")
-            .attr("id", "colormap-gradient")
-            .attr("x1", "0%")
-            .attr("y1", "100%")
-            .attr("x2", "100%")
-            .attr("y2", "0%");
-        for (let i = 0; i <= 1; i += 0.01) {
-            gradient.append('stop')
-              .attr('offset', `${i * 100}%`)
-              .attr('stop-color', colormap(1-i, 1-i));
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                svg.append("rect")
+                    .attr("x", size-i)
+                    .attr("y", j)
+                    .attr("width", 1)
+                    .attr("height", 1)
+                    .attr("fill", colormap(i / size, j / size));
+            }
         }
 
-        const verticalGradient = defs.append('linearGradient')
-            .attr('id', 'vertical-gradient')
-            .attr("x1", "0%")
-            .attr("y1", "0%")
-            .attr("x2", "0%")
-            .attr("y2", "100%");
-        for (let i = 0; i <= 1; i += 0.01) {
-            verticalGradient.append('stop')
-              .attr('offset', `${i * 100}%`)
-              .attr('stop-color', colormap(1, i));
-        }
-
-        const horizontalGradient = defs.append('linearGradient')
-            .attr('id', 'horizontal-gradient')
-            .attr("x1", "0%")
-            .attr("y1", "0%")
-            .attr("x2", "100%")
-            .attr("y2", "0%");
-        for (let i = 0; i <= 1; i += 0.01) {
-            horizontalGradient.append('stop')
-            .attr('offset', `${i * 100}%`)
-            .attr('stop-color', colormap(1-i, 1));
-        }
-
-
-        // Draw the colormap square
-        svg.append("rect")
-            .attr("width", size)
-            .attr("height", size)
-            .style("fill", "url(#colormap-gradient)")
-
-        svg.append("rect")
-            .attr("width", size)
-            .attr("height", size)
-            .style("fill", "url(#vertical-gradient)")
-
-                        // .style("fill", "url(#vertical-gradient)")
-                        // .style("fill", "url(#horizontal-gradient)");
-
-
-        // Add texts at the corners
         svg.append("text")
             .attr("x", 5)
             .attr("y", size - 5)
             .style("fill", "black")
-            .text("No distortions");
+            .text("No Distortions");
 
         svg.append("text")
             .attr("x", 5)
@@ -83,7 +38,7 @@ const LegendView = () => {
             .text("False Neighbors");
 
         svg.append("text")
-            .attr("x", size - 60)
+            .attr("x", size - 40)
             .attr("y", 15)
             .style("fill", "white")
             .text("Both");
