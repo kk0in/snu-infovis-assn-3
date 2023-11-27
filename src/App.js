@@ -1,23 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import ProjectionView from './components/ProjectionView';
+import AxisView from './components/AxisView';
+import LegendView from './components/LegendView';
+import './App.css'; // Assuming you have a CSS file for styling
+import data from './data/raw.json'; // Assuming attributes are loaded from a local JSON file
 
 function App() {
+  const numAttributes = 9;
+  // Calculate the angle between axes in radians
+  const angleStep = (2 * Math.PI) / numAttributes;
+
+  // Create an array of axis objects, each with an angle and a name
+  const initialAxes = Array.from({ length: numAttributes }, (_, index) => ({
+    x: Math.cos(index * angleStep), 
+    y: Math.sin(index * angleStep) 
+  }));
+  const [axes, setAxes] = useState(initialAxes); // Initialize your axes state here
+
+  // You would populate the data and axes states with actual data, likely from an API or a file
+
+  // Fetch your data and axes information here with useEffect and update the state
+  const width = 500;
+  const height = 350;
+  const margin = 35;
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="App-header">
+        {/* Header content here */}
+      </div>
+      <div className="App-content">
+        {/* The main content of the app, where you layout your views */}
+        <div className="Projection-container">
+          <ProjectionView 
+            data={data} 
+            axes={axes}
+            width={width}
+            height={height}
+            margin={margin} 
+          />
+        </div>
+        <div className="Axis-container">
+          <AxisView axes={axes} setAxes={setAxes} />
+        </div>
+        <div className="Legend-container">
+          <LegendView />
+        </div>
+      </div>
     </div>
   );
 }
