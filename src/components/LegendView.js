@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import { colormap } from '../colormap'; // Assuming colormap is correctly implemented
+import { colormap } from '../colormap'; 
 
 const LegendView = () => {
     const svgRef = useRef(null);
-    const size = 250; // Size of the square
-
+    const size = 250; 
+    
     useEffect(() => {
         const svg = d3.select(svgRef.current);
         for (let i = 0; i < size; i++) {

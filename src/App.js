@@ -2,32 +2,39 @@ import React, { useState, useEffect } from 'react';
 import ProjectionView from './components/ProjectionView';
 import AxisView from './components/AxisView';
 import LegendView from './components/LegendView';
-import './App.css'; // Assuming you have a CSS file for styling
-import data from './data/raw.json'; // Assuming attributes are loaded from a local JSON file
+import './App.css'; 
+import data from './data/raw.json'; 
 
 function App() {
+
+  const name = "Yeongin Kim";
+  const studentNum = "2023-23910";
+
   const numAttributes = 9;
-  // Calculate the angle between axes in radians
   const angleStep = (2 * Math.PI) / numAttributes;
 
-  // Create an array of axis objects, each with an angle and a name
   const initialAxes = Array.from({ length: numAttributes }, (_, index) => ({
     x: Math.cos(index * angleStep), 
     y: Math.sin(index * angleStep) 
   }));
-  // console.log(initialAxes);
-  const [axes, setAxes] = useState(initialAxes); // Initialize your axes state here
+  const [axes, setAxes] = useState(initialAxes); 
   const [enableCheckViz, setEnableCheckViz] = useState(false);
 
-  // You would populate the data and axes states with actual data, likely from an API or a file
 
-  // Fetch your data and axes information here with useEffect and update the state
   const width = 500;
   const height = 500;
   const margin = 35;
   
   return (
     <div className="App">
+      <div style={{display: "flex"}}>
+        <h1 style={{marginRight: 10}}>
+        {"Assignment #3 /"}
+        </h1>
+        <h2 style={{marginTop: 25}}>
+          {name + " (" + studentNum + ")"}
+        </h2>
+      </div>
       <div className="App-header">
         {/* Header content here */}
       </div>
