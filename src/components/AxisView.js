@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import attributes from '../data/attr.json'; // Assuming attributes are loaded from a local JSON file
 
-const AxisView = ({ axes, setAxes }) => {
+const AxisView = (props) => {
+    const { axes, setAxes, enableCheckViz, setEnableCheckViz } = props;
     const svgRef = useRef(null);
     const radius = 150; 
     const center = { x: 225, y: 225 }; 
@@ -74,6 +75,9 @@ const AxisView = ({ axes, setAxes }) => {
                             })
                             .on('drag', (event) => {
                                 // Calculate the new angle based on the mouse position
+
+                                setEnableCheckViz(false);
+
                                 const dx = event.x - center.x;
                                 const dy = event.y - center.y;
                                 const newAngle = Math.atan2(dy, dx);

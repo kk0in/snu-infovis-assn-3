@@ -16,6 +16,7 @@ function App() {
     y: Math.sin(index * angleStep) 
   }));
   const [axes, setAxes] = useState(initialAxes); // Initialize your axes state here
+  const [enableCheckViz, setEnableCheckViz] = useState(false);
 
   // You would populate the data and axes states with actual data, likely from an API or a file
 
@@ -38,10 +39,17 @@ function App() {
             width={width}
             height={height}
             margin={margin} 
+            enableCheckViz={enableCheckViz}
+            setEnableCheckViz={setEnableCheckViz}
           />
         </div>
         <div className="Axis-container">
-          <AxisView axes={axes} setAxes={setAxes} />
+          <AxisView 
+            axes={axes} 
+            setAxes={setAxes} 
+            enableCheckViz={enableCheckViz}
+            setEnableCheckViz={setEnableCheckViz}
+          />
         </div>
         <div className="Legend-container">
           <LegendView />

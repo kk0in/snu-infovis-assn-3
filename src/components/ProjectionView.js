@@ -4,67 +4,100 @@ import { tnc } from '../tnc'; // Import tnc function
 import { colormap } from '../colormap'; // Import colormap function
 import { Delaunay } from 'd3-delaunay';
 
+
 const ProjectionView = (props) => {
-    const [enableCheckViz, setEnableCheckViz] = useState(false);
+
+
+    const { data, axes, width, height, margin, enableCheckViz, setEnableCheckViz } = props;
     const svgRef = useRef(null);
 
-    let data = props.data;
-    let axes = props.axes;  
 
-    const points = data.map(d => {
-        let dx = 0, dy = 0;
-        axes.forEach((axis, index) => {
-            dx += axis.x * d[index]; // ax * da
-            dy += axis.y * d[index]; // ay * da
-        });
-        return { x: dx, y: dy };
-    });
 
     useEffect(() => {
         // Calculate positions of each data point
-        console.log(points);
+
+        const points = data.map(d => {
+            let dx = 0, dy = 0;
+            axes.forEach((axis, index) => {
+                dx += axis.x * d[index]; // ax * da
+                dy += axis.y * d[index]; // ay * da
+            });
+            return { dx, dy };
+        });
 
         const xScale = d3.scaleLinear()
-                        .domain(d3.extent(points, d => d.x))
-                        .range([props.margin, props.width - props.margin]);
+                        .domain(d3.extent(points, d => d.dx))
+                        .range([margin, width - margin]);
         const yScale = d3.scaleLinear()
-                        .domain(d3.extent(points, d => d.y))
-                        .range([props.margin, props.height - props.margin]);
+                        .domain(d3.extent(points, d => d.dy))
+                        .range([margin, height - margin]);
 
         const svg = d3.select(svgRef.current);
-        svg.selectAll("circle").remove(); // Clear previous visualization
+        svg.selectAll(".data-point1").remove(); // Clear previous visualization
 
         // Draw data points as circles
         svg.append("g" )
-            //.attr("transform", `translate(${props.margin}, ${props.margin})`)
+            //.attr("transform", `translate(${margin}, ${margin})`)
             .selectAll("circle")
             .data(points)
             .enter()
             .append("circle")
-            .attr("cx", d => xScale(d.x))
-            .attr("cy", d => yScale(d.y))
+            .attr("cx", d => xScale(d.dx))
+            .attr("cy", d => yScale(d.dy))
             .attr("r", 1.5)
             .style("fill", "white")
-            .style("stroke", "black");
+            .style("stroke", "black")
+            .attr("class", "data-point1");
 
         if (enableCheckViz) {
             // Implement CheckViz Visualization
-            const tncValues = tnc(data, points); // Calculate Trustworthiness/Continuity
-            const colors = points.map((_, i) => colormap(tncValues.trust[i], tncValues.conti[i]));
+            const projectedPoints2D = points.map(point => [point.dx, point.dy]);
 
-            const delaunay = Delaunay.from(points.map(d => [d.x, d.y]));
-            const voronoi = delaunay.voronoi([0, 0, 500, 500]); // Define bounds for Voronoi diagram
+            const { trust, conti } = tnc(data, projectedPoints2D);
+            const colors = points.map((_, i) => {
+                const color = d3.color(colormap(trust[i], conti[i]));
+                return color;
+            });
 
-            svg.selectAll("path")
-                .data(points)
+            const delaunay = Delaunay.from(points.map(d => [xScale(d.dx), yScale(d.dy)]));
+            const voronoi = delaunay.voronoi([0, 0, width, height]); // Define bounds for Voronoi diagram
+
+            svg.append('g')
+                .selectAll("path")
+                .data(points.map((_, i) => voronoi.renderCell(i)))
                 .enter()
                 .append("path")
-                .attr("d", (_, i) => voronoi.renderCell(i))
+                .attr("d", d => d)
                 .attr("fill", (_, i) => colors[i])
-                .attr("stroke", "none");
+                .attr("stroke", "none")
+                .attr("class", "voronoi");
+            
+            svg.append("g" )
+                //.attr("transform", `translate(${margin}, ${margin})`)
+                .selectAll("circle")
+                .data(points)
+                .enter()
+                .append("circle")
+                .attr("cx", d => xScale(d.dx))
+                .attr("cy", d => yScale(d.dy))
+                .attr("r", 1.5)
+                .style("fill", "white")
+                .style("stroke", "black")
+                .attr("class", "data-point2");
         }
-
-    }, [data, axes, enableCheckViz]);
+        else {
+            svg.selectAll(".voronoi").remove(); // Clear previous visualization
+            svg.selectAll(".data-point2").remove(); // Clear previous visualization
+        } 
+        // points.forEach(point => {
+        //     svg.append('circle')
+        //         .attr('cx', xScale(point.x))
+        //         .attr('cy', yScale(point.y))
+        //         .attr('r', 1.5)
+        //         .attr('fill', 'white')
+        //         .attr('stroke', 'black');
+        // });
+    }, [enableCheckViz, axes]);
 
     const toggleCheckViz = () => {
         setEnableCheckViz(!enableCheckViz);
@@ -72,7 +105,7 @@ const ProjectionView = (props) => {
 
     return (
         <div>
-            <svg ref={svgRef} width={500} height={500}></svg>
+            <svg ref={svgRef} width={width} height={height}></svg>
             <button onClick={toggleCheckViz}>
                 {enableCheckViz ? 'Disable CheckViz' : 'Enable CheckViz'}
             </button>
