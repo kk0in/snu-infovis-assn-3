@@ -29,14 +29,6 @@ const AxisView = (props) => {
                 y: center.y + radius * Math.sin(angle)
             };
 
-            // const direction = {
-            //     x: Math.cos(angle),
-            //     y: Math.sin(angle)
-            // };
-            // setAxes(direction);
-            
-            // console.log(axes);
-
             const labelRadius = radius + 40; 
             const labelPos = {
                 x: center.x + labelRadius * Math.cos(angle),
@@ -106,6 +98,8 @@ const AxisView = (props) => {
                                 // Update the angle in the axes array
                                 const newAxes = axes.map((axis, i) => i === index ? { ...axis, x: Math.cos(newAngle), y: Math.sin(newAngle) } : axis);
                                 setAxes(newAxes);
+                                axes[index] = { x: Math.cos(newAngle), y: Math.sin(newAngle) }; 
+                                // setAxes(prevSettings => { ({ ...prevSettings, [index]: { x: Math.cos(newAngle), y: Math.sin(newAngle) } }) });
                             })
                             .on('end', () => {
                                 // Remove the highlight by changing the color back

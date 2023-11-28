@@ -11,19 +11,19 @@ const ProjectionView = (props) => {
     const { data, axes, width, height, margin, enableCheckViz, setEnableCheckViz } = props;
     const svgRef = useRef(null);
 
-
+    const points = data.map(d => {
+        let dx = 0, dy = 0;
+        axes.forEach((axis, index) => {
+            dx += axis.x * d[index]; // ax * da
+            dy += axis.y * d[index]; // ay * da
+        });
+        return { dx, dy };
+    });
 
     useEffect(() => {
         // Calculate positions of each data point
 
-        const points = data.map(d => {
-            let dx = 0, dy = 0;
-            axes.forEach((axis, index) => {
-                dx += axis.x * d[index]; // ax * da
-                dy += axis.y * d[index]; // ay * da
-            });
-            return { dx, dy };
-        });
+
 
         const xScale = d3.scaleLinear()
                         .domain(d3.extent(points, d => d.dx))
@@ -33,7 +33,7 @@ const ProjectionView = (props) => {
                         .range([margin, height - margin]);
 
         const svg = d3.select(svgRef.current);
-        svg.selectAll(".data-point1").remove(); // Clear previous visualization
+        svg.selectAll("circle").remove(); // Clear previous visualization
 
         // Draw data points as circles
         svg.append("g" )
@@ -47,7 +47,7 @@ const ProjectionView = (props) => {
             .attr("r", 1.5)
             .style("fill", "white")
             .style("stroke", "black")
-            .attr("class", "data-point1");
+            // .attr("class", "data-point1");
 
         if (enableCheckViz) {
             // Implement CheckViz Visualization
@@ -83,11 +83,11 @@ const ProjectionView = (props) => {
                 .attr("r", 1.5)
                 .style("fill", "white")
                 .style("stroke", "black")
-                .attr("class", "data-point2");
+                // .attr("class", "data-point2");
         }
         else {
             svg.selectAll(".voronoi").remove(); // Clear previous visualization
-            svg.selectAll(".data-point2").remove(); // Clear previous visualization
+            // svg.selectAll(".data-point2").remove(); // Clear previous visualization
         } 
         // points.forEach(point => {
         //     svg.append('circle')
@@ -97,7 +97,7 @@ const ProjectionView = (props) => {
         //         .attr('fill', 'white')
         //         .attr('stroke', 'black');
         // });
-    }, [enableCheckViz, axes]);
+    }, [points, enableCheckViz, axes]);
 
     const toggleCheckViz = () => {
         setEnableCheckViz(!enableCheckViz);

@@ -15,6 +15,7 @@ function App() {
     x: Math.cos(index * angleStep), 
     y: Math.sin(index * angleStep) 
   }));
+  // console.log(initialAxes);
   const [axes, setAxes] = useState(initialAxes); // Initialize your axes state here
   const [enableCheckViz, setEnableCheckViz] = useState(false);
 
